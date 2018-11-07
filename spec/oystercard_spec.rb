@@ -29,5 +29,30 @@ describe Oystercard do
       expect{subject.top_up(1)}.to raise_error("Balance limit of #{default_limit} exceeded")
     end
 
+    it "can deduct fare of balance" do
+      add_money
+      expect(subject.deduct(1)).to eq 19
+    end
   end
+
+  describe "#touch_in, #touch_out and #in_journey?" do
+
+    it 'when initialized #in_journey? should equal false' do
+      expect(subject).not_to be_in_journey
+    end
+
+    it 'changes @travelling to true after #touch_in' do
+      subject.touch_in
+      expect(subject).to be_in_journey
+    end
+
+    it 'changes @travelling to false after #touch_out' do
+      subject.touch_in
+      subject.touch_out
+      expect(subject).not_to be_in_journey
+    end
+
+  end
+
+
 end
