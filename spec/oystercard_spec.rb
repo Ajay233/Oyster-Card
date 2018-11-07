@@ -32,7 +32,7 @@ describe Oystercard do
   end
 
   describe "#touch_in, #touch_out and #in_journey?" do
-
+    let (:croydon) { double :station }
     before '#top_up balance' do
       add_money
     end
@@ -42,23 +42,35 @@ describe Oystercard do
     end
 
     it 'changes @travelling to true after #touch_in' do
-      subject.touch_in
+      subject.touch_in(croydon)
       expect(subject).to be_in_journey
     end
 
     it 'changes @travelling to false after #touch_out' do
-      subject.touch_in
+      subject.touch_in(croydon)
       subject.touch_out
       expect(subject).not_to be_in_journey
     end
 
     it "will throw an error if balance is less than MINIMUM_FARE" do
       card = Oystercard.new
-      expect{card.touch_in}.to raise_error("Insufficient funds")
+      expect{card.touch_in(croydon)}.to raise_error("Insufficient funds")
     end
 
     it 'deducts MINIMUM_FARE on #touch_out' do
       expect{subject.touch_out}.to change{subject.balance}.by(-1)
+    end
+
+
+    it "#touch_in to store the entry station" do
+      subject.touch_in(croydon)
+      expect(subject.entry_station).to eq croydon
+    end
+
+    it "#touch_out sets @entry_station to nil" do
+      subject.touch_in(croydon)
+      subject.touch_out
+      expect(subject.entry_station).to eq nil      
     end
 
   end
