@@ -37,6 +37,11 @@ describe Oystercard do
 
   describe "#touch_in, #touch_out and #in_journey?" do
 
+    before '#top_up balance' do
+      add_money
+    end
+
+
     it 'when initialized #in_journey? should equal false' do
       expect(subject).not_to be_in_journey
     end
@@ -50,6 +55,11 @@ describe Oystercard do
       subject.touch_in
       subject.touch_out
       expect(subject).not_to be_in_journey
+    end
+
+    it "will throw an error if balance is less than MINIMUM_FARE" do
+      subject.deduct(20)
+      expect{subject.touch_in}.to raise_error("Insufficient funds")
     end
 
   end
