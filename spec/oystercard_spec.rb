@@ -29,10 +29,6 @@ describe Oystercard do
       expect{subject.top_up(1)}.to raise_error("Balance limit of #{default_limit} exceeded")
     end
 
-    it "can deduct fare of balance" do
-      add_money
-      expect(subject.deduct(1)).to eq 19
-    end
   end
 
   describe "#touch_in, #touch_out and #in_journey?" do
@@ -40,7 +36,6 @@ describe Oystercard do
     before '#top_up balance' do
       add_money
     end
-
 
     it 'when initialized #in_journey? should equal false' do
       expect(subject).not_to be_in_journey
@@ -58,8 +53,12 @@ describe Oystercard do
     end
 
     it "will throw an error if balance is less than MINIMUM_FARE" do
-      subject.deduct(20)
-      expect{subject.touch_in}.to raise_error("Insufficient funds")
+      card = Oystercard.new
+      expect{card.touch_in}.to raise_error("Insufficient funds")
+    end
+
+    it 'deducts MINIMUM_FARE on #touch_out' do
+      expect{subject.touch_out}.to change{subject.balance}.by(-1)
     end
 
   end
