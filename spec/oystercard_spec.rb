@@ -4,6 +4,8 @@ describe Oystercard do
   let(:add_money) { subject.top_up(20) }
   let(:top_up_max) { subject.top_up(Oystercard::DEFAULT_LIMIT) }
   let(:default_limit) { Oystercard::DEFAULT_LIMIT }
+  let(:croydon) { double :entry_station }
+  let(:victoria) { double :exit_station }
 
   it "text" do
     expect(subject).to be_instance_of(Oystercard)
@@ -32,7 +34,7 @@ describe Oystercard do
   end
 
   describe "#touch_in, #touch_out and #in_journey?" do
-    let (:croydon) { double :station }
+
     before '#top_up balance' do
       add_money
     end
@@ -48,7 +50,7 @@ describe Oystercard do
 
     it 'changes @travelling to false after #touch_out' do
       subject.touch_in(croydon)
-      subject.touch_out
+      subject.touch_out(victoria)
       expect(subject).not_to be_in_journey
     end
 
@@ -58,21 +60,49 @@ describe Oystercard do
     end
 
     it 'deducts MINIMUM_FARE on #touch_out' do
-      expect{subject.touch_out}.to change{subject.balance}.by(-1)
+      expect{subject.touch_out(victoria)}.to change{subject.balance}.by(-1)
     end
-
 
     it "#touch_in to store the entry station" do
       subject.touch_in(croydon)
       expect(subject.entry_station).to eq croydon
     end
 
-    it "#touch_out sets @entry_station to nil" do
-      subject.touch_in(croydon)
-      subject.touch_out
-      expect(subject.entry_station).to eq nil      
+    it 'initilizes with an empty @journeys array' do
+      expect(subject.journeys).to be_empty
     end
 
+  end
+
+  describe "@journeys" do
+
+    in_out_card = Oystercard.new(10)
+
+    it "#touch_out sets @entry_station to nil" do
+      expect(in_out_card.entry_station).to eq nil
+    end
+  end
+
+  describe '#touch_out' do
+
+    context 'having already touched in' do
+
+      let(:in_out_card) { Oystercard.new(10) }
+
+      before do
+        in_out_card.touch_in(croydon)
+      end
+
+      it 'will store @entry_station and exit station on #touch_out' do
+        in_out_card.touch_out(victoria)
+        expect(in_out_card.journeys).to include({:entry => croydon, :exit => victoria})
+      end
+
+      it 'creates one journey after touching in and out' do
+        in_out_card.touch_out(victoria)
+        expect(in_out_card.journeys.length).to eq 1
+      end
+    end
   end
 
 
