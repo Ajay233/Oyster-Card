@@ -104,17 +104,16 @@ describe Oystercard do
         expect(in_out_card.journeys).to include({:entry => "East Croydon", :exit => "Victoria"})
       end
 
-      it 'creates one journey after touching in and out' do
-        in_out_card.touch_out(victoria)
-        expect(in_out_card.journeys.length).to eq 1
-      end
-
       it "exit station initialized to nil" do
         expect(subject.exit_station).to eq nil
       end
       it "#touch_in to store the entry station" do
         subject.touch_out(victoria)
         expect(subject.exit_station).to eq "Victoria"
+      end
+      it "stores an incomplete journey where we don't touch out" do
+        hash = {entry: "East Croydon"}
+        expect(in_out_card.journeys.include?(hash)).to eq true
       end
 
     end
