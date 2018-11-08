@@ -52,6 +52,7 @@ describe Oystercard do
     it 'changes @travelling to false after #touch_out' do
       allow(croydon).to receive(:name).and_return("East Croydon")
       subject.touch_in(croydon)
+      allow(victoria).to receive(:name).and_return("Victoria")
       subject.touch_out(victoria)
       expect(subject).not_to be_in_journey
     end
@@ -63,6 +64,7 @@ describe Oystercard do
     end
 
     it 'deducts MINIMUM_FARE on #touch_out' do
+      allow(victoria).to receive(:name).and_return("Victoria")
       expect{subject.touch_out(victoria)}.to change{subject.balance}.by(-1)
     end
 
@@ -93,18 +95,28 @@ describe Oystercard do
 
       before do
         allow(croydon).to receive(:name).and_return("East Croydon")
+        allow(victoria).to receive(:name).and_return("Victoria")
         in_out_card.touch_in(croydon)
       end
 
       it 'will store @entry_station and exit station on #touch_out' do
         in_out_card.touch_out(victoria)
-        expect(in_out_card.journeys).to include({:entry => "East Croydon", :exit => victoria})
+        expect(in_out_card.journeys).to include({:entry => "East Croydon", :exit => "Victoria"})
       end
 
       it 'creates one journey after touching in and out' do
         in_out_card.touch_out(victoria)
         expect(in_out_card.journeys.length).to eq 1
       end
+
+      it "exit station initialized to nil" do
+        expect(subject.exit_station).to eq nil
+      end
+      it "#touch_in to store the entry station" do
+        subject.touch_out(victoria)
+        expect(subject.exit_station).to eq "Victoria"
+      end
+
     end
   end
 
