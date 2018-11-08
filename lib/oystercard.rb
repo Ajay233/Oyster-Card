@@ -28,7 +28,7 @@ class Oystercard
   def touch_out(station)
     deduct(MINIMUM_FARE)
     @exit_station = station.name
-    @journeys << {entry: @entry_station, exit: @exit_station}
+    add_journey
     @entry_station = nil
   end
 
@@ -44,6 +44,10 @@ class Oystercard
 
   def check_limit(amount)
     fail "Balance limit of #{DEFAULT_LIMIT} exceeded" if (@balance + amount) > DEFAULT_LIMIT
+  end
+
+  def add_journey
+    @journeys << {entry: @entry_station, exit: @exit_station}
   end
 
 end
