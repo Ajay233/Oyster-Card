@@ -1,3 +1,4 @@
+require_relative "./station.rb"
 class Oystercard
   attr_reader :balance, :entry_station, :journeys
   DEFAULT_LIMIT = 90
@@ -20,7 +21,7 @@ class Oystercard
 
   def touch_in(station)
     fail "Insufficient funds" if insufficient_funds?
-    @entry_station = station
+    @entry_station = station.name
   end
 
   def touch_out(station)

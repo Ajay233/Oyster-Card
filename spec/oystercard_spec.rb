@@ -44,11 +44,13 @@ describe Oystercard do
     end
 
     it 'changes @travelling to true after #touch_in' do
+      allow(croydon).to receive(:name).and_return("East Croydon")
       subject.touch_in(croydon)
       expect(subject).to be_in_journey
     end
 
     it 'changes @travelling to false after #touch_out' do
+      allow(croydon).to receive(:name).and_return("East Croydon")
       subject.touch_in(croydon)
       subject.touch_out(victoria)
       expect(subject).not_to be_in_journey
@@ -56,6 +58,7 @@ describe Oystercard do
 
     it "will throw an error if balance is less than MINIMUM_FARE" do
       card = Oystercard.new
+      allow(croydon).to receive(:name).and_return("East Croydon")
       expect{card.touch_in(croydon)}.to raise_error("Insufficient funds")
     end
 
@@ -63,9 +66,10 @@ describe Oystercard do
       expect{subject.touch_out(victoria)}.to change{subject.balance}.by(-1)
     end
 
-    it "#touch_in to store the entry station" do
+    it "#touch_in to store the entry station" do\
+      allow(croydon).to receive(:name).and_return("East Croydon")
       subject.touch_in(croydon)
-      expect(subject.entry_station).to eq croydon
+      expect(subject.entry_station).to eq "East Croydon"
     end
 
     it 'initilizes with an empty @journeys array' do
@@ -84,18 +88,17 @@ describe Oystercard do
   end
 
   describe '#touch_out' do
-
     context 'having already touched in' do
-
       let(:in_out_card) { Oystercard.new(10) }
 
       before do
+        allow(croydon).to receive(:name).and_return("East Croydon")
         in_out_card.touch_in(croydon)
       end
 
       it 'will store @entry_station and exit station on #touch_out' do
         in_out_card.touch_out(victoria)
-        expect(in_out_card.journeys).to include({:entry => croydon, :exit => victoria})
+        expect(in_out_card.journeys).to include({:entry => "East Croydon", :exit => victoria})
       end
 
       it 'creates one journey after touching in and out' do
